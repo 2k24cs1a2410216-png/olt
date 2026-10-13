@@ -1,0 +1,97 @@
+(async () => {
+  const answers =
+   [
+  { "id": "1", "correct": "B" },
+  { "id": "2", "correct": "D" },
+  { "id": "3", "correct": "A" },
+  { "id": "4", "correct": "C" },
+  { "id": "5", "correct": "A" },
+  { "id": "6", "correct": "A" },
+  { "id": "7", "correct": "A" },
+  { "id": "8", "correct": "C" },
+  { "id": "9", "correct": "B" },
+  { "id": "10", "correct": "C" },
+  { "id": "11", "correct": "A" },
+  { "id": "12", "correct": "C" },
+  { "id": "13", "correct": "C" },
+  { "id": "14", "correct": "C" },
+  { "id": "15", "correct": "D" },
+  { "id": "16", "correct": "A" },
+  { "id": "17", "correct": "C" },
+  { "id": "18", "correct": "C" },
+  { "id": "19", "correct": "B" },
+  { "id": "20", "correct": "D" }
+]
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    async function waitForOptions(timeout = 10000) {
+        const start = Date.now();
+
+        while (Date.now() - start < timeout) {
+            const labels = document.querySelectorAll("#QuestionOptions label");
+            if (labels.length) return labels;
+            await sleep(100);
+        }
+
+        return null;
+    }
+
+    function selectOption(letter) {
+        const labels = document.querySelectorAll("#QuestionOptions label");
+
+        for (const label of labels) {
+            if (label.textContent.trim() === letter) {
+                label.click();
+
+                const input = label.previousElementSibling;
+
+                if (input) {
+                    input.checked = true;
+                    input.dispatchEvent(new Event("change", { bubbles: true }));
+                }
+
+                console.log(`✅ Selected ${letter}`);
+                return true;
+            }
+        }
+
+        console.log(`❌ Option ${letter} not found`);
+        return false;
+    }
+
+    function saveAndNext() {
+        const btn = document.getElementById("btnSaveAndNext");
+
+        if (!btn) {
+            console.log("❌ Save & Next button not found");
+            return false;
+        }
+
+        btn.click();
+        console.log("➡️ Save & Next");
+        return true;
+    }
+
+    console.log("🚀 Starting...");
+
+    for (const { id, correct } of answers) {
+        console.log(`Question ${id} -> ${correct}`);
+
+        const labels = await waitForOptions();
+
+        if (!labels) {
+            console.log("❌ Question options not found.");
+            break;
+        }
+
+        selectOption(correct);
+
+        await sleep(10);
+
+        saveAndNext();
+
+        await sleep(10);
+    }
+
+    console.log("✅ Finished");
+})();
